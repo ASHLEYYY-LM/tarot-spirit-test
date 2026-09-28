@@ -23,9 +23,10 @@
        start        点了首页那张牌
        finish       做完 27 题（= 完成测试的人数）
        card-XX      结果是哪张牌（配合 finish 可以看出 22 张牌的分布）
-       shared-open  打开别人分享的结果链接
-       share-copy   点了「复制链接」 / share-native 用了系统分享
-       retest       重测
+       shared-open     打开别人分享的结果链接
+       share-native    用了系统分享（分享的是带结果的那条链接）
+       copy-test-link  点了「复制测试链接」（复制的是不带结果的入口地址）
+       retest          重测
   */
   function track(path, title) {
     try {
@@ -75,7 +76,8 @@
     var order = rank(scores);
     state.scores = scores;
     state.main = order[0].i;
-    state.alts = order.slice(1, 4);
+    /* 副牌只留第 2 高分那一张 */
+    state.alts = order.slice(1, 2);
   }
 
   /* 契合度：主牌是按 得分÷上限^0.75 排出来的，所以百分比必须共用同一个分母，
@@ -163,7 +165,7 @@
   function renderQuiz() {
     var q = Q[state.idx], t = T().q[String(q.id)], u = T().ui;
     $("ui-progress").textContent = u.progress.replace("{n}", state.idx + 1);
-    $("ui-chip").textContent = q.c === "V" ? u.chipV : q.c === "R1" ? u.chipR1 : u.chipR2;
+    /* 题目类别标签不再显示，进度条那一行只留「第 n 题 / 共 27 题」 */
     $("progress-bar").style.width = ((state.idx + 1) / Q.length * 100) + "%";
     $("q-text").textContent = t.t;
     $("btn-back").style.visibility = state.idx === 0 ? "hidden" : "visible";
@@ -282,6 +284,26 @@
       });
       html += "</div>";
     }
+
+    /* 「你容易被谁吸引」：镜像配对，第 i 张 ↔ 第 21-i 张（22 张正好 11 对，首尾互补） */
+    if (isMain) {
+      var pi = C.length - 1 - cardIdx;
+      var pc = t.c[String(pi)];
+      html += '<div class="attract">' +
+                '<p class="attract-lead">' + t.ui.attractLead + "</p>" +
+                '<div class="attract-card">' +
+                  '<div class="attract-fig"><img src="assets/cards/thumb/' + pad(pi) +
+                    '.jpg" loading="lazy" alt="' + pc.name + '"></div>' +
+                  '<div class="attract-main">' +
+                    '<div class="attract-roman">' + C[pi].r + "</div>" +
+                    '<div class="attract-name">' + pc.name + "</div>" +
+                    '<p class="attract-kw">' + pc.kw + "</p>" +
+                    '<p class="attract-why">' + pc.pairWhy + "</p>" +
+                  "</div>" +
+                "</div>" +
+              "</div>";
+    }
+
     html += "</div>";
     return html;
   }
@@ -342,10 +364,16 @@
     window.Share.share(t.ui.title, t.ui.shareText.replace("{card}", name), currentUrl(), null);
   }
 
+  /* 「复制链接」复制的是测试本身的入口地址（不带结果 hash），收到的人从头开始测；
+     带自己结果的链接走上面的「分享结果」 */
+  function siteUrl() {
+    return location.origin + location.pathname;
+  }
+
   function doCopy() {
     var btn = $("btn-copy"), old = btn.textContent;
-    track("share-copy", "复制链接");
-    window.Share.copy(currentUrl(), function () {
+    track("copy-test-link", "复制测试链接");
+    window.Share.copy(siteUrl(), function () {
       btn.textContent = T().ui.copied;
       setTimeout(function () { btn.textContent = old; }, 1800);
     });
