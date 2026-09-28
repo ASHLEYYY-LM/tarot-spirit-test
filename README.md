@@ -20,6 +20,8 @@ data/questions.js   27 题，只有题号、类别、选项的牌号权重，不
 data/cards.js       22 张牌的罗马数字、英文名，以及图片加载失败时用的 SVG 符号
 assets/cards/00-21.jpg    韦特牌面（400px，约 106 KB/张）
 assets/cards/thumb/       同上的 120px 缩略图，用于「看看全部 22 张牌」网格
+assets/hero-card.png      首页那张可点击的封面牌
+og-image.jpg        分享到微信/WhatsApp 时的预览图（1200×630）
 i18n/zh-CN.js       简体中文：界面 + 27 题 + 22 张牌结果文案
 i18n/en.js          英文
 i18n/yue.js         粵語（繁体 + 书面粤语）
@@ -101,13 +103,47 @@ https://ashleyyy-lm.github.io/tarot-spirit-test/#c=17&s=34&l=yue&a=ABCCBA...
 ## 三处可选配置
 
 - **首页那张牌**：`assets/hero-card.png` 是从参考稿里裁出来的封面牌（自带金边与圆角、四角透明），换图直接覆盖这个文件即可。想改回用某张具体的韦特牌，把 `index.html` 里 `hero-img` 的 `src` 换成 `assets/cards/17.jpg` 这类路径。首页没有「开始测试」按钮，点这张牌就是开始。
-- **分享缩略图**：放一张 1200×630 的 `og-image.png` 到根目录。纯静态页做不到按结果动态换图，所有结果共用这一张。
+- **分享缩略图**：根目录的 `og-image.jpg`（1200×630）。纯静态页做不到按结果动态换图，所有结果共用这一张。生成脚本在 `tarot/_work/make_og.py`（改文案后重跑即可）。
+- **访问统计**：见下一节。
 - **自定义域名**：根目录放 `CNAME` 文件写域名，Pages 设置里填上同一个域名，再去域名服务商加一条 CNAME 记录指向 `ashleyyy-lm.github.io`。
+
+## 访问统计（GoatCounter，可选）
+
+静态页本身没有任何统计能力。想看到「多少人做了这个测试」，用 GoatCounter（免费、无 cookie、不收集个人信息）：
+
+1. 到 https://www.goatcounter.com 用邮箱注册，**Site code** 自己起一个（例如 `tarot-spirit`，就是访问地址 `https://tarot-spirit.goatcounter.com` 里那段）
+2. 打开 `index.html`，找到这一行：
+
+   ```js
+   window.TRACK_SITE = "MYCODE";
+   ```
+
+   把 `MYCODE` 换成你的 site code。不填也不会报错，只是没有统计。
+3. 推上去，进 GoatCounter 后台就能看到数据了（第一次访问后约 10 秒出现）
+
+会记录这些事件，各自独立可查：
+
+| 事件名 | 含义 |
+| --- | --- |
+| （页面访问） | 由 GoatCounter 自动统计，含来源网站、国家/地区、浏览器 |
+| `start` | 点了首页那张牌，进入答题 |
+| `finish` | **做完全部 27 题**（这个才是「有多少人做了测试」） |
+| `card-00` … `card-21` | 结果是哪张牌，用来看看 22 张牌的分布是否均匀 |
+| `shared-open` | 打开别人分享的结果链接（计入页面访问，但**不计入 `finish`**） |
+| `share-copy` / `share-native` | 点了复制链接 / 用了系统分享 |
+| `retest` | 点了重测 |
+
+两个提醒：
+
+- 埋点全部写在 `app.js` 的 `track()` 里，GoatCounter 脚本被广告拦截器挡住、或没网时，`track()` 会静默跳过，不影响答题。
+- 想排除自己的访问：用浏览器的隐私窗口打开，或在 GoatCounter 后台把自动记录的自己访问删掉。
+
+> GitHub 仓库 Insights → Traffic 里的数字是**仓库页面**的浏览量和 git 克隆次数，跟 Pages 站点的访客数是两回事，别拿它当统计。
 
 ## 已知限制
 
 - 链接里带着完整答案，只适合娱乐性测试，不要放隐私相关的问题。
-- 没有服务端，无法统计答题人数或结果分布。
+- 没有服务端，统计只能是「次数」，拿不到用户身份，也做不了防刷。
 
 ## 本地预览
 

@@ -17,6 +17,23 @@
   var $ = function (id) { return document.getElementById(id); };
   var T = function () { return I[state.lang] || I["zh-CN"]; };
 
+  /* ---------- 访问统计 ----------
+     只在 index.html 里填了 goatcounter 站点名时才生效；没填或脚本被拦截都静默跳过。
+     页面访问量由 count.js 自动上报，下面这些是自定义事件：
+       start        点了首页那张牌
+       finish       做完 27 题（= 完成测试的人数）
+       card-XX      结果是哪张牌（配合 finish 可以看出 22 张牌的分布）
+       shared-open  打开别人分享的结果链接
+       share-copy   点了「复制链接」 / share-native 用了系统分享
+       retest       重测
+  */
+  function track(path, title) {
+    try {
+      if (!window.goatcounter || typeof window.goatcounter.count !== "function") return;
+      window.goatcounter.count({ path: path, title: title || path, event: true });
+    } catch (e) {}
+  }
+
   /* ---------- 计分 ---------- */
   function tally(answers) {
     var s = new Array(C.length).fill(0);
@@ -138,6 +155,7 @@
     state.idx = 0;
     state.answers = [];
     state.browsing = null;
+    track("start", "开始测试");
     show("quiz");
     renderQuiz();
   }
@@ -180,6 +198,8 @@
     compute(state.answers);
     var sc = state.scores[state.main];
     history.replaceState(null, "", window.Share.url(state.main, sc, state.lang, state.answers));
+    track("finish", "完成测试 · " + state.lang);
+    track("card-" + pad(state.main), C[state.main].r + " " + C[state.main].en);
     show("result");
     renderResult();
   }
@@ -318,11 +338,13 @@
 
   function doShare() {
     var t = T(), name = t.c[String(state.main)].name;
+    track("share-native", "系统分享");
     window.Share.share(t.ui.title, t.ui.shareText.replace("{card}", name), currentUrl(), null);
   }
 
   function doCopy() {
     var btn = $("btn-copy"), old = btn.textContent;
+    track("share-copy", "复制链接");
     window.Share.copy(currentUrl(), function () {
       btn.textContent = T().ui.copied;
       setTimeout(function () { btn.textContent = old; }, 1800);
@@ -333,6 +355,7 @@
     history.replaceState(null, "", location.pathname);
     state.answers = [];
     state.browsing = null;
+    track("retest", "重测");
     show("intro");
   }
 
@@ -351,6 +374,7 @@
       applyUI();
       show("result");
       renderResult();
+      track("shared-open", "打开他人分享的结果");
     } else {
       applyUI();
       show("intro");
