@@ -210,6 +210,7 @@
   /* 牌面用真实韦特图，加载失败时回退到自绘 SVG 符号 */
   var pad = function (n) { return n < 10 ? "0" + n : String(n); };
 
+
   function cardArt(cardIdx, cls) {
     return '<svg class="' + (cls || "card-art") + '" viewBox="0 0 100 120" aria-hidden="true">' + C[cardIdx].svg + "</svg>";
   }
@@ -295,9 +296,11 @@
                   '<div class="attract-fig"><img src="assets/cards/thumb/' + pad(pi) +
                     '.jpg" loading="lazy" alt="' + pc.name + '"></div>' +
                   '<div class="attract-main">' +
-                    '<div class="attract-roman">' + C[pi].r + "</div>" +
-                    '<div class="attract-name">' + pc.name + "</div>" +
-                    '<p class="attract-kw">' + pc.kw + "</p>" +
+                    '<div class="attract-title">' +
+                      '<span class="attract-roman">' + C[pi].r + "</span>" +
+                      '<span class="attract-name">' + pc.name + "</span>" +
+                    "</div>" +
+                    /* 一段话：先说这张牌的人是什么样的，再说两张牌之间怎么互相补位 */
                     '<p class="attract-why">' + pc.pairWhy + "</p>" +
                   "</div>" +
                 "</div>" +
