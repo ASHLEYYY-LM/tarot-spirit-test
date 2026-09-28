@@ -29,25 +29,6 @@ i18n/yue.js         粵語（繁体 + 书面粤语）
 
 题目逻辑和三语文案是完全分开的。加题、改一句粤语、换配色都不用碰 `app.js`。
 
-## 部署到 GitHub Pages（三步）
-
-1. 在 GitHub 新建仓库 **tarot-spirit-test**，选 **Public**，不要勾 README 和 .gitignore。
-2. 把本目录里的全部文件上传到仓库根目录（保留 `data/`、`i18n/` 两个子目录结构，网页端拖拽上传或 `git push` 都行）。
-3. 仓库页面 → **Settings → Pages → Source** 选 `Deploy from a branch`，分支 `main`、目录 `/ (root)`，Save。
-
-等一两分钟，刷新 https://ashleyyy-lm.github.io/tarot-spirit-test/ 就能看到。
-
-命令行版本：
-
-```bash
-git init
-git add .
-git commit -m "first release"
-git branch -M main
-git remote add origin https://github.com/ASHLEYYY-LM/tarot-spirit-test.git
-git push -u origin main
-```
-
 ## 分享是怎么工作的
 
 答完 27 题后，结果被编码进 URL 的 hash：
