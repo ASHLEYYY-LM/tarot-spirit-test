@@ -3,7 +3,7 @@
 零构建的纯静态测试站点。22 张大阿尔卡纳、27 道情境题，支持简体中文 / English / 粵語，结果编码进链接可分享。
 
 - 仓库：https://github.com/ASHLEYYY-LM/tarot-spirit-test
-- 上线后地址：https://ashleyyy-lm.github.io/tarot-spirit-test/
+- 上线后地址：https://nashgator.github.io/tarot-spirit-test/
 
 牌义依据：向日葵《塔罗葵花宝典》「一、大牌牌意」。
 
@@ -34,7 +34,7 @@ i18n/yue.js         粵語（繁体 + 书面粤语）
 答完 27 题后，结果被编码进 URL 的 hash：
 
 ```
-https://ashleyyy-lm.github.io/tarot-spirit-test/#c=17&s=34&l=yue&a=ABCCBA...
+https://nashgator.github.io/tarot-spirit-test/#c=17&s=34&l=yue&a=ABCCBA...
 ```
 
 `c` 牌号、`s` 总分、`l` 语言、`a` 27 个答案。hash 不会发给服务器，所以 GitHub Pages 不会 404，也不需要数据库。别人点开链接，前端解码后直接渲染结果页。
@@ -86,7 +86,7 @@ https://ashleyyy-lm.github.io/tarot-spirit-test/#c=17&s=34&l=yue&a=ABCCBA...
 - **首页那张牌**：`assets/hero-card.png` 是从参考稿里裁出来的封面牌（自带金边与圆角、四角透明），换图直接覆盖这个文件即可。想改回用某张具体的韦特牌，把 `index.html` 里 `hero-img` 的 `src` 换成 `assets/cards/17.jpg` 这类路径。首页没有「开始测试」按钮，点这张牌就是开始。
 - **分享缩略图**：根目录的 `og-image.jpg`（1200×630）。纯静态页做不到按结果动态换图，所有结果共用这一张。生成脚本在 `tarot/_work/make_og.py`（改文案后重跑即可）。
 - **访问统计**：见下一节。
-- **自定义域名**：根目录放 `CNAME` 文件写域名，Pages 设置里填上同一个域名，再去域名服务商加一条 CNAME 记录指向 `ashleyyy-lm.github.io`。
+- **自定义域名**：根目录放 `CNAME` 文件写域名，Pages 设置里填上同一个域名，再去域名服务商加一条 CNAME 记录指向 `nashgator.github.io`。
 
 ## 访问统计（GoatCounter，可选）
 
