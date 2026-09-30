@@ -124,12 +124,26 @@
 
 </main>
 
+<!-- 分享结果图：生成完成后在这里预览，可保存或转发 -->
+<div id="share-modal" class="modal" hidden>
+  <div class="modal-box">
+    <p id="share-status" class="share-status"></p>
+    <img id="share-img" class="share-img" alt="" hidden>
+    <p id="share-tip" class="fine" hidden></p>
+    <div class="modal-actions">
+      <a id="btn-save-img" class="btn btn-primary" download="tarot-card.png" hidden></a>
+      <button id="btn-close-modal" class="btn btn-ghost"></button>
+    </div>
+  </div>
+</div>
+
 <script src="data/questions.js"></script>
 <script src="data/cards.js"></script>
 <script src="i18n/zh-CN.js"></script>
 <script src="i18n/en.js"></script>
 <script src="i18n/yue.js"></script>
 <script src="share.js"></script>
+<script src="sharecard.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

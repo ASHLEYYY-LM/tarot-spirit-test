@@ -175,13 +175,21 @@ h1{
   background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:13px;
   padding:15px 17px; color:var(--ink); font-family:inherit; font-size:15.5px; cursor:pointer; transition:.16s;
 }
-.opt:hover{background:var(--panel-hi); border-color:var(--gold); transform:translateX(3px)}
+/* 触控设备的「粘滞 hover」：手指点完之后，浏览器会让新出现的元素继续处于 :hover，
+   导致下一题同位置的选项一出现就带着金圈。所以 hover 效果只给真正有鼠标的设备，
+   手机端改用 :active 反馈。 */
+@media (hover: hover) and (pointer: fine) {
+  .opt:hover{background:var(--panel-hi); border-color:var(--gold); transform:translateX(3px)}
+  .opt:hover .key{background:var(--gold); color:#101a33; border-color:var(--gold)}
+}
+.opt:active{background:var(--panel-hi); border-color:var(--gold-dim)}
+.opt:focus-visible{outline:2px solid var(--gold); outline-offset:3px}
 .opt .key{
   flex:0 0 26px; height:26px; border-radius:50%; border:1px solid var(--gold-dim);
   color:var(--gold); font-size:12.5px; display:flex; align-items:center; justify-content:center;
   font-family:var(--serif); margin-top:1px;
+  -webkit-tap-highlight-color:transparent;
 }
-.opt:hover .key{background:var(--gold); color:#101a33; border-color:var(--gold)}
 .qfoot{margin-top:18px; display:flex; justify-content:flex-start}
 
 /* 结果 */
@@ -227,6 +235,7 @@ h1{
 .alt-kw{font-size:12.5px; color:var(--ink-dim); letter-spacing:.02em}
 .alt-meter{display:flex; align-items:center; gap:9px; margin-top:9px}
 .alt-track{display:block; flex:1; height:4px; background:rgba(255,255,255,.08); border-radius:2px; overflow:hidden}
+.alts-note{color:var(--ink-dim); opacity:.6; font-size:12.5px; line-height:1.7; text-align:center; margin:12px 0 0}
 .alt-bar{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--gold-dim)); transition:width .9s ease; opacity:.85}
 .alt-num{font-size:11.5px; color:var(--gold); font-family:var(--serif); min-width:2.7em; text-align:right}
 
@@ -271,3 +280,25 @@ h1{
   .btn{padding:12px 18px; font-size:14.5px}
   .alt-roman{width:2.6em}
 }
+
+/* 分享结果图弹层 */
+.modal{
+  position:fixed; inset:0; z-index:50;
+  background:rgba(3,8,20,.86); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center; padding:22px;
+  overflow:auto;
+}
+.modal-box{
+  width:100%; max-width:420px; text-align:center;
+  background:linear-gradient(180deg,var(--panel-hi),var(--panel));
+  border:1px solid var(--line); border-radius:var(--radius); padding:20px 18px 18px;
+}
+.share-status{font-size:13.5px; color:var(--ink-dim); margin:14px 0}
+/* 图很长，限一下高度，让「保存图片 / 关闭」始终露在屏幕里 */
+.share-img{
+  display:block; width:auto; max-width:100%; max-height:52vh; margin:0 auto;
+  border-radius:12px; border:1px solid var(--line); box-shadow:0 18px 44px rgba(0,0,0,.55);
+}
+.modal-box .fine{margin:14px auto 0; max-width:30em; text-align:center}
+.modal-actions{margin-top:16px; display:flex; flex-direction:column; gap:9px; align-items:center}
+.modal-actions .btn{width:100%; max-width:340px}

@@ -77,7 +77,7 @@
     state.scores = scores;
     state.main = order[0].i;
     /* 副牌只留第 2 高分那一张 */
-    state.alts = order.slice(1, 2);
+    state.alts = order.slice(1, 3);
   }
 
   /* 契合度：主牌是按 得分÷上限^0.75 排出来的，所以百分比必须共用同一个分母，
@@ -117,6 +117,9 @@
     $("btn-retest").textContent = u.retest;
     $("btn-all").textContent = u.allCards;
     $("ui-result-note").textContent = u.resultNote;
+    $("btn-close-modal").textContent = u.closeBtn;
+    $("btn-save-img").textContent = u.saveImage;
+    $("share-tip").textContent = u.cardTip;
 
     var box = $("langs");
     box.innerHTML = "";
@@ -283,6 +286,8 @@
                   "</span>" +
                 "</div>";
       });
+      /* 结尾另起一行小字，提示可以去下面看 22 张牌的完整解析 */
+      if (t.ui.altsNote) html += '<p class="alts-note">' + t.ui.altsNote + "</p>";
       html += "</div>";
     }
 
@@ -363,10 +368,63 @@
     return window.Share.url(idx, state.scores[state.main], state.lang, state.answers);
   }
 
+  /* 「分享结果」：生成一张带二维码的结果图，弹出来给你保存或转发
+     注意：只有自己在结果页时才有 author，「浏览全部 22 张」时用当前正在看的那张 */
+  var cardBusy = false;
+
   function doShare() {
-    var t = T(), name = t.c[String(state.main)].name;
-    track("share-native", "系统分享");
-    window.Share.share(t.ui.title, t.ui.shareText.replace("{card}", name), currentUrl(), null);
+    if (cardBusy) return;
+    var t = T(), idx = state.browsing === null ? state.main : state.browsing;
+    track("share-card", "生成结果图 · " + C[idx].r);
+    cardBusy = true;
+
+    var modal = $("share-modal"), img = $("share-img"), tip = $("share-tip"),
+        save = $("btn-save-img"), status = $("share-status");
+
+    img.hidden = true; tip.hidden = true; save.hidden = true;
+    status.textContent = t.ui.makingCard;
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    var finish = function () { cardBusy = false; };
+
+    window.ShareCard.make({ idx: idx, pct: fitPct(state.scores, state.main), t: t },
+      function (url) {
+        status.textContent = "";
+        img.src = url; img.hidden = false;
+        tip.hidden = false;
+        save.href = url;
+        save.download = "tarot-" + C[idx].en.replace(/\s+/g, "-").toLowerCase() + "." + window.ShareCard.EXT;
+        save.hidden = false;
+        finish();
+
+        /* 手机浏览器支持带图分享就直接唤起系统面板（桌面不试，手机会话才走这条路） */
+        var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+        if (coarse && navigator.canShare) {
+          fetch(url).then(function (r) { return r.blob(); }).then(function (blob) {
+            var file = new File([blob], save.download, { type: window.ShareCard.MIME });
+            if (navigator.canShare({ files: [file] })) {
+              navigator.share({
+                files: [file],
+                title: t.ui.title,
+                text: t.ui.shareText.replace("{card}", t.c[String(idx)].name)
+              }).catch(function () {});
+            }
+          }).catch(function () {});
+        }
+      },
+      function (e) {
+        status.textContent = T().ui.disclaimer;   /* 生成失败：退回纯文字分享 */
+        window.Share.share(t.ui.title, t.ui.shareText.replace("{card}", t.c[String(idx)].name),
+                           currentUrl(), null);
+        finish();
+      });
+  }
+
+  function closeModal() {
+    $("share-modal").hidden = true;
+    $("share-img").removeAttribute("src");
+    document.body.style.overflow = "";
   }
 
   /* 「复制链接」复制的是测试本身的入口地址（不带结果 hash），收到的人从头开始测；
@@ -419,6 +477,10 @@
   $("btn-share").onclick = doShare;
   $("btn-copy").onclick = doCopy;
   $("btn-retest").onclick = retest;
+  $("btn-close-modal").onclick = closeModal;
+  $("share-modal").addEventListener("click", function (e) {
+    if (e.target === $("share-modal")) closeModal();
+  });
   $("btn-all").onclick = function () {
     var box = $("all-cards");
     box.hidden = !box.hidden;
