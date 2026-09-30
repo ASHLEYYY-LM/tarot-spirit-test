@@ -21,7 +21,7 @@
     line: "rgba(221,200,153,.22)", panel: "rgba(255,255,255,.045)"
   };
 
-  var SITE_URL = "https://ashleyyy-lm.github.io/tarot-spirit-test/";
+  var SITE_URL = "https://nashgator.github.io/tarot-spirit-test/";
   var QR_SRC = "assets/qr-card.png";
 
   /* ---------- 小工具 ---------- */
