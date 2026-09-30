@@ -286,10 +286,12 @@
       html += "</div>";
     }
 
-    /* 「你容易被谁吸引」：镜像配对，第 i 张 ↔ 第 21-i 张（22 张正好 11 对，首尾互补） */
+    /* 「你容易被谁吸引」：镜像配对，第 i 张 ↔ 第 21-i 张（22 张正好 11 对，首尾互补）
+       注意：pairWhy 写在主牌自己的档案里、内容是配对牌，所以取 me.pairWhy 而不是 pc.pairWhy */
     if (isMain) {
       var pi = C.length - 1 - cardIdx;
       var pc = t.c[String(pi)];
+      var me = t.c[String(cardIdx)];
       html += '<div class="attract">' +
                 '<p class="attract-lead">' + t.ui.attractLead + "</p>" +
                 '<div class="attract-card">' +
@@ -301,7 +303,7 @@
                       '<span class="attract-name">' + pc.name + "</span>" +
                     "</div>" +
                     /* 一段话：先说这张牌的人是什么样的，再说两张牌之间怎么互相补位 */
-                    '<p class="attract-why">' + pc.pairWhy + "</p>" +
+                    '<p class="attract-why">' + me.pairWhy + "</p>" +
                   "</div>" +
                 "</div>" +
               "</div>";
